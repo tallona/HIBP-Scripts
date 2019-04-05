@@ -7,21 +7,24 @@ class HIBP
         $this->source = $source;
     }
     
-    public function checkEmail($email, $truncate = false)
+    public function checkEmail($email)
     {
-        $url = sprintf('https://haveibeenpwned.com/api/v2/breachedaccount/%s' . ($truncate ? '?truncateResponse=true' : ''), $email);
+        $url = sprintf('https://haveibeenpwned.com/api/v2/breachedaccount/%s', $email);
+
+        $curl = curl_init();
         
-        $options = array(
-            'https' => array(
-                'method' => "GET",
-                'header' => "Accept-language: en",
-                'User-Agent' => "Breach-Checker-For-" . str_replace(" ", "-", $this->source) 
-            )
+        curl_setopt_array($curl, [
+                CURLOPT_RETURNTRANSFER => 1,
+                CURLOPT_URL => $url,
+                CURLOPT_USERAGENT => "Breach-Checker-For-" . $this->source,
+                CURLOPT_SSL_VERIFYHOST => 0,
+                CURLOPT_SSL_VERIFYPEER => FALSE
+            ]
         );
         
-        $context = stream_context_create($options);
-        $response = json_decode(file_get_contents($url, false, $context));
-
+        $response = curl_exec($curl);
+        curl_close($curl);
+        
         sleep(1);
 
         if (!empty($response)) {

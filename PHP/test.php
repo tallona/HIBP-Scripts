@@ -1,7 +1,7 @@
 <?php
 require('HIBP.php');
 
-$source = "Test Website";
+$source = "Source Name";
 $email = "name@email.com";
 
 $HIBP = new HIBP($source);
